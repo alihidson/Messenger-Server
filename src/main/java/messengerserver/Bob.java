@@ -39,7 +39,7 @@ public class Bob {
 
         // After login, handle normal chat interaction
         while ((userInput = stdIn.readLine()) != null) {
-            out.println(userInput);
+            out.println("Alice : " + userInput);
             serverResponse = in.readLine();
             System.out.println("Server response: " + serverResponse);
         }

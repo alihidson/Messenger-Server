@@ -8,8 +8,8 @@ public class Server {
     private static HashMap<String, String> userCredentials = new HashMap<>();
 
     public static void main(String[] args) throws IOException {
-        userCredentials.put("Alice", "alice1234");
-        userCredentials.put("Bob", "bob1234");
+        userCredentials.put("Alice", "a123");
+        userCredentials.put("Bob", "b123");
 
         ServerSocket serverSocket = new ServerSocket(12345);
         System.out.println("Server started. Waiting for clients...");
@@ -54,7 +54,7 @@ public class Server {
 
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
-                    System.out.println("Received from client: " + inputLine);
+                    System.out.println("Received from " + inputLine);
                     out.println("Echo: " + inputLine);
                 }
 
