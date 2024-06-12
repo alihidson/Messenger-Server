@@ -74,6 +74,7 @@ public class Alice extends Application {
         userInputField = new TextField();
         userInputField.setPrefWidth(300);
         userInputField.setFont(new Font("Arial", 14));
+
         Button sendButton = new Button("Send");
         sendButton.setStyle("-fx-background-color: rgb(103,23,201); -fx-text-fill: rgb(255,255,255);");
         sendButton.setFont(new Font("Arial", 14));

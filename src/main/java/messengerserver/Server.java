@@ -70,7 +70,10 @@ public class Server {
 
         private boolean validateCredentials(String name, String password) {
             String storedPassword = userCredentials.get(name);
-            return storedPassword != null && storedPassword.equals(password);
+            if(storedPassword != null && storedPassword.equals(password))
+                return true;
+            else
+                return false;
         }
     }
 }
