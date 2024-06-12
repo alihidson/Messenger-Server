@@ -48,7 +48,8 @@ public class Server {
 
                 if (validateCredentials(name, password)) {
                     out.println("Login successful. Welcome, " + name + "!");
-                } else {
+                }
+                else {
                     out.println("Invalid credentials");
                 }
 
@@ -61,7 +62,8 @@ public class Server {
                 in.close();
                 out.close();
                 clientSocket.close();
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -72,4 +74,3 @@ public class Server {
         }
     }
 }
-

@@ -2,52 +2,152 @@ package messengerserver;
 
 import java.io.*;
 import java.net.*;
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.stage.Stage;
+import javafx.scene.text.Font;
+import javafx.scene.paint.Color;
 
-public class Alice {
-    public static void main(String[] args) throws IOException {
+public class Alice extends Application {
+    private PrintWriter out;
+    private BufferedReader in;
+    private TextArea messagesArea;
+    private TextField userInputField;
+    private TextField nameField;
+    private PasswordField passwordField;
+    private Button loginButton;
+    private VBox loginPane;
+    private VBox chatPane;
+    private Stage primaryStage;
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+        primaryStage.setTitle("Alice");
+
+        // Setup login pane
+        loginPane = new VBox(10);
+        loginPane.setPadding(new Insets(10));
+        loginPane.setStyle("-fx-background-color: rgb(255, 123, 70);");
+
+        Label nameLabel = new Label("Enter Name:");
+        nameField = new TextField();
+        nameField.setPromptText("Enter Name");
+
+
+        Label passwordLabel = new Label("Enter Password:");
+        passwordField = new PasswordField();
+        passwordField.setPromptText("Enter Password");
+
+        loginButton = new Button("Login");
+        loginButton.setStyle("-fx-background-color: rgb(9,39,154); -fx-text-fill: white;");
+        loginButton.setOnAction(e -> login());
+
+        loginPane.getChildren().addAll(nameLabel, nameField, passwordLabel, passwordField, loginButton);
+
+
+
+        // Setup chat pane
+        chatPane = new VBox(10);
+        chatPane.setPadding(new Insets(10));
+        chatPane.setStyle("-fx-background-color: rgb(140,12,12);");
+
+        Label titleLabel = new Label("Alice");
+        titleLabel.setFont(new Font("Arial", 24));
+        titleLabel.setTextFill(Color.rgb(66,255,195));
+        chatPane.getChildren().add(titleLabel);
+
+        messagesArea = new TextArea();
+        messagesArea.setEditable(false);
+        messagesArea.setWrapText(true);
+        messagesArea.setStyle("-fx-control-inner-background: rgb(213,121,176); -fx-font-size: 14px;");
+        chatPane.getChildren().add(messagesArea);
+
+        HBox hbox = new HBox(10);
+        userInputField = new TextField();
+        userInputField.setPrefWidth(300);
+        userInputField.setFont(new Font("Arial", 14));
+        Button sendButton = new Button("Send");
+        sendButton.setStyle("-fx-background-color: rgb(103,23,201); -fx-text-fill: rgb(255,255,255);");
+        sendButton.setFont(new Font("Arial", 14));
+        sendButton.setOnAction(e -> sendMessage());
+        hbox.getChildren().addAll(userInputField, sendButton);
+        chatPane.getChildren().add(hbox);
+
+        primaryStage.setScene(new Scene(loginPane, 500, 350));
+        primaryStage.show();
+
+        new Thread(this::connectToServer).start();
+    }
+
+    private void connectToServer() {
         String serverAddress = "localhost";
         int serverPort = 12345;
 
-        Socket socket = new Socket(serverAddress, serverPort);
-        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            Socket socket = new Socket(serverAddress, serverPort);
+            out = new PrintWriter(socket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-        String serverResponse;
-        String userInput;
+            updateMessagesArea(in.readLine()); // Enter name:
 
-        // Read and respond to "Enter name:"
-        serverResponse = in.readLine();
-        System.out.println(serverResponse); // Enter name:
-        userInput = stdIn.readLine();
-        out.println(userInput);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-        // Read and respond to "Enter password:"
-        serverResponse = in.readLine();
-        System.out.println(serverResponse); // Enter password:
-        userInput = stdIn.readLine();
-        out.println(userInput);
+    private void login() {
+        String name = nameField.getText();
+        String password = passwordField.getText();
 
-        // Read and display the login response from the server
-        serverResponse = in.readLine();
-        System.out.println("Server response: " + serverResponse);
-
-        if (!serverResponse.startsWith("Login successful")) {
-            System.out.println("login failure.");
+        if (name.isEmpty() || password.isEmpty()) {
+            updateMessagesArea("Name and password cannot be empty.");
             return;
         }
 
-        // After login, handle normal chat interaction
-        while ((userInput = stdIn.readLine()) != null) {
-            out.println("Alice : " + userInput);
-            serverResponse = in.readLine();
-            System.out.println("Server response: " + serverResponse);
+        out.println(name);
+        try {
+            updateMessagesArea(in.readLine()); // Enter password:
+        }
+        catch (IOException e) {
+            e.printStackTrace();
         }
 
-        // Close resources
-        out.close();
-        in.close();
-        stdIn.close();
-        socket.close();
+        out.println(password);
+        try {
+            String serverResponse = in.readLine();
+            updateMessagesArea(serverResponse); // Login response
+
+            if (serverResponse.startsWith("Login successful")) {
+                primaryStage.setScene(new Scene(chatPane, 500, 400));
+                primaryStage.show();
+            }
+            else {
+                updateMessagesArea("Login failed. Please try again.");
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendMessage() {
+        String message = userInputField.getText();
+        if (message != null && !message.trim().isEmpty()) {
+            out.println("Alice : " + message);
+            userInputField.clear();
+        }
+    }
+
+    private void updateMessagesArea(String message) {
+        messagesArea.appendText(message + "\n");
     }
 }
