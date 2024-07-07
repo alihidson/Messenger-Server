@@ -1,8 +1,8 @@
-module moneyexchange.messengerserver {
+module moneyexchange.messenger {
     requires javafx.controls;
     requires javafx.fxml;
 
 
-    opens moneyexchange.messengerserver to javafx.fxml;
-    exports messengerserver;
+    opens messenger to javafx.fxml;
+    exports messenger;
 }

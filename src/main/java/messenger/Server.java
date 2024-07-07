@@ -1,4 +1,4 @@
-package messengerserver;
+package messenger;
 
 import java.io.*;
 import java.net.*;
@@ -11,7 +11,7 @@ public class Server {
         userCredentials.put("Alice", "a123");
         userCredentials.put("Bob", "b123");
 
-        ServerSocket serverSocket = new ServerSocket(12345);
+        ServerSocket serverSocket = new ServerSocket(8081);
         System.out.println("Server started. Waiting for clients...");
 
         while (true) {

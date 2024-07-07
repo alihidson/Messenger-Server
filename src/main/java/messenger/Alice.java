@@ -1,4 +1,4 @@
-package messengerserver;
+package messenger;
 
 import java.io.*;
 import java.net.*;
@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 import javafx.scene.text.Font;
 import javafx.scene.paint.Color;
 
-public class Bob extends Application {
+public class Alice extends Application {
     private PrintWriter out;
     private BufferedReader in;
     private TextArea messagesArea;
@@ -30,7 +30,7 @@ public class Bob extends Application {
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        primaryStage.setTitle("Bob");
+        primaryStage.setTitle("Alice");
 
         // Setup login pane
         loginPane = new VBox(10);
@@ -38,30 +38,30 @@ public class Bob extends Application {
         loginPane.setStyle("-fx-background-color: rgb(255, 123, 70);");
 
         Label nameLabel = new Label("Enter Name:");
-        nameLabel.setFont(new Font("Arial", 14));
         nameField = new TextField();
-        nameField.setFont(new Font("Arial", 14));
+        nameField.setPromptText("Enter Name");
+
 
         Label passwordLabel = new Label("Enter Password:");
-        passwordLabel.setFont(new Font("Arial", 14));
         passwordField = new PasswordField();
-        passwordField.setFont(new Font("Arial", 14));
+        passwordField.setPromptText("Enter Password");
 
         loginButton = new Button("Login");
         loginButton.setStyle("-fx-background-color: rgb(9,39,154); -fx-text-fill: white;");
-        loginButton.setFont(new Font("Arial", 14));
         loginButton.setOnAction(e -> login());
 
         loginPane.getChildren().addAll(nameLabel, nameField, passwordLabel, passwordField, loginButton);
+
+
 
         // Setup chat pane
         chatPane = new VBox(10);
         chatPane.setPadding(new Insets(10));
         chatPane.setStyle("-fx-background-color: rgb(140,12,12);");
 
-        Label titleLabel = new Label("Bob's Messenger");
+        Label titleLabel = new Label("Alice");
         titleLabel.setFont(new Font("Arial", 24));
-        titleLabel.setTextFill(Color.rgb(66,155,227));
+        titleLabel.setTextFill(Color.rgb(66,255,195));
         chatPane.getChildren().add(titleLabel);
 
         messagesArea = new TextArea();
@@ -74,6 +74,7 @@ public class Bob extends Application {
         userInputField = new TextField();
         userInputField.setPrefWidth(300);
         userInputField.setFont(new Font("Arial", 14));
+
         Button sendButton = new Button("Send");
         sendButton.setStyle("-fx-background-color: rgb(103,23,201); -fx-text-fill: rgb(255,255,255);");
         sendButton.setFont(new Font("Arial", 14));
@@ -81,7 +82,7 @@ public class Bob extends Application {
         hbox.getChildren().addAll(userInputField, sendButton);
         chatPane.getChildren().add(hbox);
 
-        primaryStage.setScene(new Scene(loginPane, 400, 300));
+        primaryStage.setScene(new Scene(loginPane, 500, 350));
         primaryStage.show();
 
         new Thread(this::connectToServer).start();
@@ -89,7 +90,7 @@ public class Bob extends Application {
 
     private void connectToServer() {
         String serverAddress = "localhost";
-        int serverPort = 12345;
+        int serverPort = 8081;
 
         try {
             Socket socket = new Socket(serverAddress, serverPort);
@@ -98,7 +99,8 @@ public class Bob extends Application {
 
             updateMessagesArea(in.readLine()); // Enter name:
 
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -115,7 +117,8 @@ public class Bob extends Application {
         out.println(name);
         try {
             updateMessagesArea(in.readLine()); // Enter password:
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -125,12 +128,14 @@ public class Bob extends Application {
             updateMessagesArea(serverResponse); // Login response
 
             if (serverResponse.startsWith("Login successful")) {
-                primaryStage.setScene(new Scene(chatPane, 500, 350));
+                primaryStage.setScene(new Scene(chatPane, 500, 400));
                 primaryStage.show();
-            } else {
+            }
+            else {
                 updateMessagesArea("Login failed. Please try again.");
             }
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -138,7 +143,7 @@ public class Bob extends Application {
     private void sendMessage() {
         String message = userInputField.getText();
         if (message != null && !message.trim().isEmpty()) {
-            out.println("Bob : " + message);
+            out.println("Alice : " + message);
             userInputField.clear();
         }
     }
@@ -147,3 +152,4 @@ public class Bob extends Application {
         messagesArea.appendText(message + "\n");
     }
 }
+
